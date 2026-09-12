@@ -196,12 +196,17 @@ export const performResponseAction = createServerFn({ method: "POST" })
     if (actionError) throw new Error(actionError.message);
 
     const nextStatus = statusByAction[data.actionType];
-    const update: Record<string, unknown> = {};
-    if (nextStatus) update["status"] = nextStatus;
-    if (data.actionType === "assign") update["assigned_to"] = userId;
-    if (Object.keys(update).length > 0) {
-      await supabase.from("incidents").update(update).eq("id", incident.id);
+    if (nextStatus) {
+      await supabase
+        .from("incidents")
+        .update(
+          data.actionType === "assign"
+            ? { status: nextStatus, assigned_to: userId }
+            : { status: nextStatus },
+        )
+        .eq("id", incident.id);
     }
+
 
     if (data.actionType === "simulate_isolate" && incident.endpoint_id) {
       await supabase.from("endpoints").update({ isolated: true }).eq("id", incident.endpoint_id);
