@@ -10,33 +10,103 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiPublicAgentCommandResultRouteImport } from './routes/api/public/agent-command-result'
+import { Route as ApiPublicAgentCommandsRouteImport } from './routes/api/public/agent-commands'
+import { Route as ApiPublicAgentEnrollRouteImport } from './routes/api/public/agent-enroll'
+import { Route as ApiPublicAgentHeartbeatRouteImport } from './routes/api/public/agent-heartbeat'
+import { Route as ApiPublicEventsBatchRouteImport } from './routes/api/public/events-batch'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAgentCommandResultRoute =
+  ApiPublicAgentCommandResultRouteImport.update({
+    id: '/api/public/agent-command-result',
+    path: '/api/public/agent-command-result',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicAgentCommandsRoute = ApiPublicAgentCommandsRouteImport.update({
+  id: '/api/public/agent-commands',
+  path: '/api/public/agent-commands',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicAgentEnrollRoute = ApiPublicAgentEnrollRouteImport.update({
+  id: '/api/public/agent-enroll',
+  path: '/api/public/agent-enroll',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicAgentHeartbeatRoute = ApiPublicAgentHeartbeatRouteImport.update({
+  id: '/api/public/agent-heartbeat',
+  path: '/api/public/agent-heartbeat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicEventsBatchRoute = ApiPublicEventsBatchRouteImport.update({
+  id: '/api/public/events-batch',
+  path: '/api/public/events-batch',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/public/agent-command-result': typeof ApiPublicAgentCommandResultRoute
+  '/api/public/agent-commands': typeof ApiPublicAgentCommandsRoute
+  '/api/public/agent-enroll': typeof ApiPublicAgentEnrollRoute
+  '/api/public/agent-heartbeat': typeof ApiPublicAgentHeartbeatRoute
+  '/api/public/events-batch': typeof ApiPublicEventsBatchRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/public/agent-command-result': typeof ApiPublicAgentCommandResultRoute
+  '/api/public/agent-commands': typeof ApiPublicAgentCommandsRoute
+  '/api/public/agent-enroll': typeof ApiPublicAgentEnrollRoute
+  '/api/public/agent-heartbeat': typeof ApiPublicAgentHeartbeatRoute
+  '/api/public/events-batch': typeof ApiPublicEventsBatchRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/public/agent-command-result': typeof ApiPublicAgentCommandResultRoute
+  '/api/public/agent-commands': typeof ApiPublicAgentCommandsRoute
+  '/api/public/agent-enroll': typeof ApiPublicAgentEnrollRoute
+  '/api/public/agent-heartbeat': typeof ApiPublicAgentHeartbeatRoute
+  '/api/public/events-batch': typeof ApiPublicEventsBatchRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/api/public/agent-command-result'
+    | '/api/public/agent-commands'
+    | '/api/public/agent-enroll'
+    | '/api/public/agent-heartbeat'
+    | '/api/public/events-batch'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/api/public/agent-command-result'
+    | '/api/public/agent-commands'
+    | '/api/public/agent-enroll'
+    | '/api/public/agent-heartbeat'
+    | '/api/public/events-batch'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/public/agent-command-result'
+    | '/api/public/agent-commands'
+    | '/api/public/agent-enroll'
+    | '/api/public/agent-heartbeat'
+    | '/api/public/events-batch'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiPublicAgentCommandResultRoute: typeof ApiPublicAgentCommandResultRoute
+  ApiPublicAgentCommandsRoute: typeof ApiPublicAgentCommandsRoute
+  ApiPublicAgentEnrollRoute: typeof ApiPublicAgentEnrollRoute
+  ApiPublicAgentHeartbeatRoute: typeof ApiPublicAgentHeartbeatRoute
+  ApiPublicEventsBatchRoute: typeof ApiPublicEventsBatchRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +118,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/agent-command-result': {
+      id: '/api/public/agent-command-result'
+      path: '/api/public/agent-command-result'
+      fullPath: '/api/public/agent-command-result'
+      preLoaderRoute: typeof ApiPublicAgentCommandResultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/agent-commands': {
+      id: '/api/public/agent-commands'
+      path: '/api/public/agent-commands'
+      fullPath: '/api/public/agent-commands'
+      preLoaderRoute: typeof ApiPublicAgentCommandsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/agent-enroll': {
+      id: '/api/public/agent-enroll'
+      path: '/api/public/agent-enroll'
+      fullPath: '/api/public/agent-enroll'
+      preLoaderRoute: typeof ApiPublicAgentEnrollRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/agent-heartbeat': {
+      id: '/api/public/agent-heartbeat'
+      path: '/api/public/agent-heartbeat'
+      fullPath: '/api/public/agent-heartbeat'
+      preLoaderRoute: typeof ApiPublicAgentHeartbeatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/events-batch': {
+      id: '/api/public/events-batch'
+      path: '/api/public/events-batch'
+      fullPath: '/api/public/events-batch'
+      preLoaderRoute: typeof ApiPublicEventsBatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiPublicAgentCommandResultRoute: ApiPublicAgentCommandResultRoute,
+  ApiPublicAgentCommandsRoute: ApiPublicAgentCommandsRoute,
+  ApiPublicAgentEnrollRoute: ApiPublicAgentEnrollRoute,
+  ApiPublicAgentHeartbeatRoute: ApiPublicAgentHeartbeatRoute,
+  ApiPublicEventsBatchRoute: ApiPublicEventsBatchRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
