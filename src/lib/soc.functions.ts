@@ -164,7 +164,11 @@ export const performResponseAction = createServerFn({ method: "POST" })
     if (incidentError) throw new Error(incidentError.message);
     if (!incident) throw new Error("Incident not found");
 
-    const statusByAction: Record<ActionType, string | null> = {
+    const statusByAction: Record<
+      ActionType,
+      "open" | "acknowledged" | "investigating" | "contained" | "closed"
+    > = {
+
       acknowledge: "acknowledged",
       assign: "acknowledged",
       mark_investigating: "investigating",
