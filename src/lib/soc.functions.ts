@@ -11,23 +11,20 @@ const ALLOWED_ACTIONS = [
 ] as const;
 type ActionType = (typeof ALLOWED_ACTIONS)[number];
 
-async function orgContext(supabase: {
-  from: (t: string) => {
-    select: (c: string) => {
-      eq: (
-        c: string,
-        v: string,
-      ) => { maybeSingle: () => Promise<{ data: Record<string, unknown> | null }> };
-    };
-  };
-}, userId: string) {
-  const { data } = await supabase.from("profiles").select("organization_id, email").eq("id", userId).maybeSingle();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function orgContext(supabase: any, userId: string) {
+  const { data } = await supabase
+    .from("profiles")
+    .select("organization_id, email")
+    .eq("id", userId)
+    .maybeSingle();
   if (!data) throw new Error("Profile not found");
   return {
-    organizationId: data["organization_id"] as string,
-    email: (data["email"] as string) ?? "analyst",
+    organizationId: data.organization_id as string,
+    email: (data.email as string) ?? "analyst",
   };
 }
+
 
 /**
  * Test telemetry: pushes a realistic WINWORD -> POWERSHELL (encoded) -> outbound
