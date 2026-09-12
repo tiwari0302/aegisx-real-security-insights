@@ -10,6 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardRouteImport } from './routes/_dashboard'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as DashboardAuditLogsRouteImport } from './routes/_dashboard/audit-logs'
+import { Route as DashboardDetectionRulesRouteImport } from './routes/_dashboard/detection-rules'
+import { Route as DashboardOverviewRouteImport } from './routes/_dashboard/overview'
+import { Route as DashboardResponseCenterRouteImport } from './routes/_dashboard/response-center'
+import { Route as DashboardSettingsRouteImport } from './routes/_dashboard/settings'
+import { Route as DashboardEndpointsIndexRouteImport } from './routes/_dashboard/endpoints/index'
+import { Route as DashboardEndpointsIdRouteImport } from './routes/_dashboard/endpoints/$id'
+import { Route as DashboardIncidentsIndexRouteImport } from './routes/_dashboard/incidents/index'
+import { Route as DashboardIncidentsIdRouteImport } from './routes/_dashboard/incidents/$id'
 import { Route as ApiPublicAgentCommandResultRouteImport } from './routes/api/public/agent-command-result'
 import { Route as ApiPublicAgentCommandsRouteImport } from './routes/api/public/agent-commands'
 import { Route as ApiPublicAgentEnrollRouteImport } from './routes/api/public/agent-enroll'
@@ -20,6 +31,60 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/_dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardAuditLogsRoute = DashboardAuditLogsRouteImport.update({
+  id: '/audit-logs',
+  path: '/audit-logs',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardDetectionRulesRoute = DashboardDetectionRulesRouteImport.update({
+  id: '/detection-rules',
+  path: '/detection-rules',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardOverviewRoute = DashboardOverviewRouteImport.update({
+  id: '/overview',
+  path: '/overview',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardResponseCenterRoute = DashboardResponseCenterRouteImport.update({
+  id: '/response-center',
+  path: '/response-center',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardEndpointsIndexRoute = DashboardEndpointsIndexRouteImport.update({
+  id: '/endpoints/',
+  path: '/endpoints/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardEndpointsIdRoute = DashboardEndpointsIdRouteImport.update({
+  id: '/endpoints/$id',
+  path: '/endpoints/$id',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardIncidentsIndexRoute = DashboardIncidentsIndexRouteImport.update({
+  id: '/incidents/',
+  path: '/incidents/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardIncidentsIdRoute = DashboardIncidentsIdRouteImport.update({
+  id: '/incidents/$id',
+  path: '/incidents/$id',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const ApiPublicAgentCommandResultRoute =
   ApiPublicAgentCommandResultRouteImport.update({
@@ -50,58 +115,122 @@ const ApiPublicEventsBatchRoute = ApiPublicEventsBatchRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/audit-logs': typeof DashboardAuditLogsRoute
+  '/detection-rules': typeof DashboardDetectionRulesRoute
+  '/overview': typeof DashboardOverviewRoute
+  '/response-center': typeof DashboardResponseCenterRoute
+  '/settings': typeof DashboardSettingsRoute
+  '/endpoints/$id': typeof DashboardEndpointsIdRoute
+  '/incidents/$id': typeof DashboardIncidentsIdRoute
   '/api/public/agent-command-result': typeof ApiPublicAgentCommandResultRoute
   '/api/public/agent-commands': typeof ApiPublicAgentCommandsRoute
   '/api/public/agent-enroll': typeof ApiPublicAgentEnrollRoute
   '/api/public/agent-heartbeat': typeof ApiPublicAgentHeartbeatRoute
   '/api/public/events-batch': typeof ApiPublicEventsBatchRoute
+  '/endpoints/': typeof DashboardEndpointsIndexRoute
+  '/incidents/': typeof DashboardIncidentsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/login': typeof LoginRoute
+  '/audit-logs': typeof DashboardAuditLogsRoute
+  '/detection-rules': typeof DashboardDetectionRulesRoute
+  '/overview': typeof DashboardOverviewRoute
+  '/response-center': typeof DashboardResponseCenterRoute
+  '/settings': typeof DashboardSettingsRoute
+  '/endpoints/$id': typeof DashboardEndpointsIdRoute
+  '/incidents/$id': typeof DashboardIncidentsIdRoute
   '/api/public/agent-command-result': typeof ApiPublicAgentCommandResultRoute
   '/api/public/agent-commands': typeof ApiPublicAgentCommandsRoute
   '/api/public/agent-enroll': typeof ApiPublicAgentEnrollRoute
   '/api/public/agent-heartbeat': typeof ApiPublicAgentHeartbeatRoute
   '/api/public/events-batch': typeof ApiPublicEventsBatchRoute
+  '/endpoints': typeof DashboardEndpointsIndexRoute
+  '/incidents': typeof DashboardIncidentsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_dashboard': typeof DashboardRouteWithChildren
+  '/login': typeof LoginRoute
+  '/_dashboard/audit-logs': typeof DashboardAuditLogsRoute
+  '/_dashboard/detection-rules': typeof DashboardDetectionRulesRoute
+  '/_dashboard/overview': typeof DashboardOverviewRoute
+  '/_dashboard/response-center': typeof DashboardResponseCenterRoute
+  '/_dashboard/settings': typeof DashboardSettingsRoute
+  '/_dashboard/endpoints/$id': typeof DashboardEndpointsIdRoute
+  '/_dashboard/incidents/$id': typeof DashboardIncidentsIdRoute
   '/api/public/agent-command-result': typeof ApiPublicAgentCommandResultRoute
   '/api/public/agent-commands': typeof ApiPublicAgentCommandsRoute
   '/api/public/agent-enroll': typeof ApiPublicAgentEnrollRoute
   '/api/public/agent-heartbeat': typeof ApiPublicAgentHeartbeatRoute
   '/api/public/events-batch': typeof ApiPublicEventsBatchRoute
+  '/_dashboard/endpoints/': typeof DashboardEndpointsIndexRoute
+  '/_dashboard/incidents/': typeof DashboardIncidentsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/login'
+    | '/audit-logs'
+    | '/detection-rules'
+    | '/overview'
+    | '/response-center'
+    | '/settings'
+    | '/endpoints/$id'
+    | '/incidents/$id'
     | '/api/public/agent-command-result'
     | '/api/public/agent-commands'
     | '/api/public/agent-enroll'
     | '/api/public/agent-heartbeat'
     | '/api/public/events-batch'
+    | '/endpoints/'
+    | '/incidents/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/login'
+    | '/audit-logs'
+    | '/detection-rules'
+    | '/overview'
+    | '/response-center'
+    | '/settings'
+    | '/endpoints/$id'
+    | '/incidents/$id'
     | '/api/public/agent-command-result'
     | '/api/public/agent-commands'
     | '/api/public/agent-enroll'
     | '/api/public/agent-heartbeat'
     | '/api/public/events-batch'
+    | '/endpoints'
+    | '/incidents'
   id:
     | '__root__'
     | '/'
+    | '/_dashboard'
+    | '/login'
+    | '/_dashboard/audit-logs'
+    | '/_dashboard/detection-rules'
+    | '/_dashboard/overview'
+    | '/_dashboard/response-center'
+    | '/_dashboard/settings'
+    | '/_dashboard/endpoints/$id'
+    | '/_dashboard/incidents/$id'
     | '/api/public/agent-command-result'
     | '/api/public/agent-commands'
     | '/api/public/agent-enroll'
     | '/api/public/agent-heartbeat'
     | '/api/public/events-batch'
+    | '/_dashboard/endpoints/'
+    | '/_dashboard/incidents/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
+  LoginRoute: typeof LoginRoute
   ApiPublicAgentCommandResultRoute: typeof ApiPublicAgentCommandResultRoute
   ApiPublicAgentCommandsRoute: typeof ApiPublicAgentCommandsRoute
   ApiPublicAgentEnrollRoute: typeof ApiPublicAgentEnrollRoute
@@ -117,6 +246,83 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_dashboard': {
+      id: '/_dashboard'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_dashboard/audit-logs': {
+      id: '/_dashboard/audit-logs'
+      path: '/audit-logs'
+      fullPath: '/audit-logs'
+      preLoaderRoute: typeof DashboardAuditLogsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/detection-rules': {
+      id: '/_dashboard/detection-rules'
+      path: '/detection-rules'
+      fullPath: '/detection-rules'
+      preLoaderRoute: typeof DashboardDetectionRulesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/overview': {
+      id: '/_dashboard/overview'
+      path: '/overview'
+      fullPath: '/overview'
+      preLoaderRoute: typeof DashboardOverviewRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/response-center': {
+      id: '/_dashboard/response-center'
+      path: '/response-center'
+      fullPath: '/response-center'
+      preLoaderRoute: typeof DashboardResponseCenterRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/settings': {
+      id: '/_dashboard/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof DashboardSettingsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/endpoints/': {
+      id: '/_dashboard/endpoints/'
+      path: '/endpoints'
+      fullPath: '/endpoints/'
+      preLoaderRoute: typeof DashboardEndpointsIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/endpoints/$id': {
+      id: '/_dashboard/endpoints/$id'
+      path: '/endpoints/$id'
+      fullPath: '/endpoints/$id'
+      preLoaderRoute: typeof DashboardEndpointsIdRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/incidents/': {
+      id: '/_dashboard/incidents/'
+      path: '/incidents'
+      fullPath: '/incidents/'
+      preLoaderRoute: typeof DashboardIncidentsIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/incidents/$id': {
+      id: '/_dashboard/incidents/$id'
+      path: '/incidents/$id'
+      fullPath: '/incidents/$id'
+      preLoaderRoute: typeof DashboardIncidentsIdRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/api/public/agent-command-result': {
       id: '/api/public/agent-command-result'
@@ -156,8 +362,38 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DashboardRouteChildren {
+  DashboardAuditLogsRoute: typeof DashboardAuditLogsRoute
+  DashboardDetectionRulesRoute: typeof DashboardDetectionRulesRoute
+  DashboardOverviewRoute: typeof DashboardOverviewRoute
+  DashboardResponseCenterRoute: typeof DashboardResponseCenterRoute
+  DashboardSettingsRoute: typeof DashboardSettingsRoute
+  DashboardEndpointsIdRoute: typeof DashboardEndpointsIdRoute
+  DashboardIncidentsIdRoute: typeof DashboardIncidentsIdRoute
+  DashboardEndpointsIndexRoute: typeof DashboardEndpointsIndexRoute
+  DashboardIncidentsIndexRoute: typeof DashboardIncidentsIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAuditLogsRoute: DashboardAuditLogsRoute,
+  DashboardDetectionRulesRoute: DashboardDetectionRulesRoute,
+  DashboardOverviewRoute: DashboardOverviewRoute,
+  DashboardResponseCenterRoute: DashboardResponseCenterRoute,
+  DashboardSettingsRoute: DashboardSettingsRoute,
+  DashboardEndpointsIdRoute: DashboardEndpointsIdRoute,
+  DashboardIncidentsIdRoute: DashboardIncidentsIdRoute,
+  DashboardEndpointsIndexRoute: DashboardEndpointsIndexRoute,
+  DashboardIncidentsIndexRoute: DashboardIncidentsIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRouteWithChildren,
+  LoginRoute: LoginRoute,
   ApiPublicAgentCommandResultRoute: ApiPublicAgentCommandResultRoute,
   ApiPublicAgentCommandsRoute: ApiPublicAgentCommandsRoute,
   ApiPublicAgentEnrollRoute: ApiPublicAgentEnrollRoute,
