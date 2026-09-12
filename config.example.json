@@ -1,0 +1,4 @@
+{
+  "backend_url": "https://YOUR-PROJECT.supabase.co/functions/v1",
+  "enroll_key": "PASTE-YOUR-ORGANIZATION-ENROLL-KEY-FROM-SETTINGS-PAGE"
+}
