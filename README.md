@@ -21,10 +21,20 @@ copy config.example.json config.json
 Edit `config.json`:
 ```json
 {
-  "backend_url": "https://YOUR-PROJECT.supabase.co/functions/v1",
+  "backend_url": "https://YOUR-DEPLOYED-APP-DOMAIN",
   "enroll_key": "the key shown on your AegisX Settings page"
 }
 ```
+
+> **Note:** `backend_url` is the base URL of the deployed AegisX **web app**
+> itself (its Lovable publish domain or Vercel domain — e.g.
+> `https://aegisx-real-security-insights.vercel.app`), **not** a
+> `*.supabase.co/functions/v1` URL. The agent endpoints (`agent-enroll`,
+> `events-batch`, etc.) are TanStack Start server routes served at
+> `/api/public/...` on that same app domain — they are not Supabase Edge
+> Functions, even though Supabase is used underneath for the database/auth.
+> `agent.py` appends `/api/public/<name>` to whatever you put here, so make
+> sure `backend_url` has no trailing slash and no extra path.
 
 ## Run
 
