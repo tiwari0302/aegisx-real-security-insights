@@ -4,15 +4,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { performResponseAction, sendTestTelemetry } from "@/lib/soc.functions";
 
 export function useProfile() {
+  // If a profile row is momentarily missing right after signup, retry a
+  // few times instead of immediately treating it as "not authenticated".
+  // Also keep polling briefly in case the DB trigger is still catching up.
   return useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
-      // getSession() reads local storage only (no network round-trip), so it
-      // can't race with a fresh redirect the way getUser() (which calls out
-      // to the Auth server) sometimes did.
       const { data: sessionData } = await supabase.auth.getSession();
       const user = sessionData.session?.user;
-      if (!user) return null; // genuinely logged out
+      if (!user) return null;
 
       const { data, error } = await supabase
         .from("profiles")
@@ -20,12 +20,17 @@ export function useProfile() {
         .eq("id", user.id)
         .maybeSingle();
       if (error) throw error;
-      return data; // null here means "session exists but no profile row yet" (signup trigger still running)
+      return data;
     },
-    // If a profile row is momentarily missing right after signup, retry a
-    // few times instead of immediately treating it as "not authenticated".
     retry: (failureCount) => failureCount < 3,
     retryDelay: 700,
+    refetchInterval: (query) => {
+      // Poll a handful of times if we got a successful-but-null result
+      // (session exists, no profile row yet) — then stop and let the UI
+      // show a manual retry instead of spinning forever.
+      if (query.state.data !== null) return false;
+      return query.state.dataUpdateCount < 5 ? 1500 : false;
+    },
   });
 }
 
