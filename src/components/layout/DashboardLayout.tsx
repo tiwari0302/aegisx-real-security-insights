@@ -51,11 +51,13 @@ export function DashboardLayout({ pathSegment, title }: { pathSegment?: string |
       <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-background text-sm text-muted-foreground">
         <Loader2 className="size-6 animate-spin text-primary" />
         <p>{isError ? "Couldn't load your profile." : "Setting up your account…"}</p>
-        {isError && (
-          <button onClick={() => refetch()} className="text-primary underline">
-            Try again
-          </button>
-        )}
+        <button onClick={() => refetch()} className="text-primary underline">
+          Try again
+        </button>
+        <p className="max-w-xs text-center text-xs">
+          Still stuck? Your account may have been created before the database was fully set up —
+          run the profile backfill script in Supabase, then try again.
+        </p>
       </div>
     );
   }
