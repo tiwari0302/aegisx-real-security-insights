@@ -51,7 +51,7 @@ async function aiSummary(params: {
   reasons: { rule: string; description: string; evidence: string }[];
   events: IngestEvent[];
 }): Promise<string | null> {
-  const apiKey = process.env["LOVABLE_API_KEY"];
+  const apiKey = process.env["GEMINI_API_KEY"];
   if (!apiKey) return null;
 
   const evidence = {
@@ -66,34 +66,34 @@ async function aiSummary(params: {
     })),
   };
 
+  const systemPrompt =
+    "You are a senior SOC analyst. Given structured detection evidence, write a concise incident summary for a tier-1 analyst: 3-5 sentences covering what happened, why it is suspicious, likely attacker objective, and the recommended next containment step. No markdown headings, no bullet lists, plain prose.";
+
   try {
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Lovable-API-Key": apiKey,
-        "X-Lovable-AIG-SDK": "fetch",
+    // Direct call to Google AI Studio's Gemini API (generativelanguage.googleapis.com) —
+    // no Lovable gateway involved. Model name can be swapped via GEMINI_MODEL env var.
+    const model = process.env["GEMINI_MODEL"] || "gemini-2.5-flash";
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: systemPrompt }] },
+          contents: [{ role: "user", parts: [{ text: JSON.stringify(evidence) }] }],
+          generationConfig: { temperature: 0.4, maxOutputTokens: 400 },
+        }),
       },
-      body: JSON.stringify({
-        model: "google/gemini-3.8-flash",
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are a senior SOC analyst. Given structured detection evidence, write a concise incident summary for a tier-1 analyst: 3-5 sentences covering what happened, why it is suspicious, likely attacker objective, and the recommended next containment step. No markdown headings, no bullet lists, plain prose.",
-          },
-          { role: "user", content: JSON.stringify(evidence) },
-        ],
-      }),
-    });
+    );
     if (!res.ok) {
       console.error("AI summary failed", res.status, await res.text());
       return null;
     }
     const data = (await res.json()) as {
-      choices?: { message?: { content?: string } }[];
+      candidates?: { content?: { parts?: { text?: string }[] } }[];
     };
-    return data.choices?.[0]?.message?.content?.trim() ?? null;
+    const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("").trim();
+    return text || null;
   } catch (err) {
     console.error("AI summary error", err);
     return null;
