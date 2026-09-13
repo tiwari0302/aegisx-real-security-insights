@@ -118,7 +118,12 @@ def send_heartbeat(cfg: dict) -> None:
 
 
 def get_process_connections(pid: int):
-    """Return real outbound connections for a given process, if any."""
+    """Return real outbound connections for a given process, if any.
+
+    Emits both a human-readable "raddr" string AND separate dest_ip/dest_port
+    fields, because the backend's unusual_outbound detection rule reads
+    payload.dest_port / payload.dest_ip specifically (see src/lib/detection.ts).
+    """
     try:
         proc = psutil.Process(pid)
         conns = proc.net_connections(kind="inet")
@@ -126,6 +131,8 @@ def get_process_connections(pid: int):
             {
                 "laddr": f"{c.laddr.ip}:{c.laddr.port}" if c.laddr else None,
                 "raddr": f"{c.raddr.ip}:{c.raddr.port}" if c.raddr else None,
+                "dest_ip": c.raddr.ip if c.raddr else None,
+                "dest_port": c.raddr.port if c.raddr else None,
                 "status": c.status,
             }
             for c in conns
@@ -252,14 +259,21 @@ def execute_command(cfg: dict, cmd: dict) -> None:
         if action == "terminate":
             pid = target.get("pid")
             expected_name = (target.get("process_name") or "").upper()
-            proc = psutil.Process(pid)
-            actual_name = proc.name().upper()
-            if actual_name != expected_name:
-                detail = f"safety check failed: pid {pid} is {actual_name}, expected {expected_name}"
+            if pid is None:
+                # Backend didn't include a PID in the command target (e.g. the
+                # dashboard's "Terminate approved test process" button only
+                # sends a process_name, not a live PID). Fail safely instead
+                # of crashing on psutil.Process(None).
+                detail = f"no pid provided in command target — cannot safely terminate {expected_name or 'unknown process'}"
             else:
-                proc.terminate()
-                result = "success"
-                detail = f"terminated pid {pid} ({actual_name})"
+                proc = psutil.Process(pid)
+                actual_name = proc.name().upper()
+                if actual_name != expected_name:
+                    detail = f"safety check failed: pid {pid} is {actual_name}, expected {expected_name}"
+                else:
+                    proc.terminate()
+                    result = "success"
+                    detail = f"terminated pid {pid} ({actual_name})"
 
         elif action == "isolate":
             # Real isolation would reconfigure the firewall/network adapter.
