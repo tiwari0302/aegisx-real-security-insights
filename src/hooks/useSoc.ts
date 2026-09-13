@@ -7,15 +7,25 @@ export function useProfile() {
   return useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
-      const { data: auth } = await supabase.auth.getUser();
-      if (!auth.user) return null;
-      const { data } = await supabase
+      // getSession() reads local storage only (no network round-trip), so it
+      // can't race with a fresh redirect the way getUser() (which calls out
+      // to the Auth server) sometimes did.
+      const { data: sessionData } = await supabase.auth.getSession();
+      const user = sessionData.session?.user;
+      if (!user) return null; // genuinely logged out
+
+      const { data, error } = await supabase
         .from("profiles")
         .select("id, email, full_name, role, organization_id, organizations(name, enroll_key, is_demo)")
-        .eq("id", auth.user.id)
+        .eq("id", user.id)
         .maybeSingle();
-      return data;
+      if (error) throw error;
+      return data; // null here means "session exists but no profile row yet" (signup trigger still running)
     },
+    // If a profile row is momentarily missing right after signup, retry a
+    // few times instead of immediately treating it as "not authenticated".
+    retry: (failureCount) => failureCount < 3,
+    retryDelay: 700,
   });
 }
 
