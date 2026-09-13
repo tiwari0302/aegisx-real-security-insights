@@ -1,4 +1,4 @@
 {
-  "backend_url": "https://YOUR-PROJECT.supabase.co/functions/v1",
+  "backend_url": "https://aegisx-real-security-insights.vercel.app",
   "enroll_key": "PASTE-YOUR-ORGANIZATION-ENROLL-KEY-FROM-SETTINGS-PAGE"
 }
