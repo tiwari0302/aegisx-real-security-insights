@@ -84,7 +84,7 @@ def save_config(cfg: dict) -> None:
 
 
 def enroll(cfg: dict) -> dict:
-    url = f"{cfg['backend_url']}/agent-enroll"
+    url = f"{cfg['backend_url']}/api/public/agent-enroll"
     payload = {
         "hostname": socket.gethostname(),
         "os": f"{platform.system()} {platform.release()}",
@@ -106,7 +106,7 @@ def auth_headers(cfg: dict) -> dict:
 
 
 def send_heartbeat(cfg: dict) -> None:
-    url = f"{cfg['backend_url']}/agent-heartbeat"
+    url = f"{cfg['backend_url']}/api/public/agent-heartbeat"
     payload = {
         "endpoint_id": cfg["endpoint_id"],
         "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -214,7 +214,7 @@ def build_events_for_new_processes(prev: dict, curr: dict) -> list:
 def send_events(cfg: dict, events: list) -> None:
     if not events:
         return
-    url = f"{cfg['backend_url']}/events-batch"
+    url = f"{cfg['backend_url']}/api/public/events-batch"
     payload = {"endpoint_id": cfg["endpoint_id"], "events": events}
     try:
         resp = requests.post(url, json=payload, headers=auth_headers(cfg), timeout=20)
@@ -228,7 +228,7 @@ def send_events(cfg: dict, events: list) -> None:
 
 def poll_commands(cfg: dict) -> None:
     """Check for pending allowlisted response actions and execute them safely."""
-    url = f"{cfg['backend_url']}/agent-commands"
+    url = f"{cfg['backend_url']}/api/public/agent-commands"
     try:
         resp = requests.get(url, params={"endpoint_id": cfg["endpoint_id"]},
                              headers=auth_headers(cfg), timeout=10)
@@ -278,7 +278,7 @@ def execute_command(cfg: dict, cmd: dict) -> None:
 
 
 def report_command_result(cfg: dict, command_id: str, status: str, detail: str) -> None:
-    url = f"{cfg['backend_url']}/agent-command-result"
+    url = f"{cfg['backend_url']}/api/public/agent-command-result"
     payload = {"command_id": command_id, "status": status, "result": detail}
     try:
         requests.post(url, json=payload, headers=auth_headers(cfg), timeout=10)
