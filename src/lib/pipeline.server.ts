@@ -72,19 +72,32 @@ async function aiSummary(params: {
   try {
     // Direct call to Google AI Studio's Gemini API (generativelanguage.googleapis.com) —
     // no Lovable gateway involved. Model name can be swapped via GEMINI_MODEL env var.
+    //
+    // Hard timeout: a slow/unreachable AI call must NEVER be allowed to hang
+    // the whole detection pipeline. If Gemini doesn't respond within 8s, we
+    // abort and just skip the summary — the incident, score, and MITRE
+    // mapping have already been saved by this point regardless.
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
     const model = process.env["GEMINI_MODEL"] || "gemini-2.5-flash";
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: systemPrompt }] },
-          contents: [{ role: "user", parts: [{ text: JSON.stringify(evidence) }] }],
-          generationConfig: { temperature: 0.4, maxOutputTokens: 400 },
-        }),
-      },
-    );
+    let res: Response;
+    try {
+      res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents: [{ role: "user", parts: [{ text: JSON.stringify(evidence) }] }],
+            generationConfig: { temperature: 0.4, maxOutputTokens: 400 },
+          }),
+          signal: controller.signal,
+        },
+      );
+    } finally {
+      clearTimeout(timeout);
+    }
     if (!res.ok) {
       console.error("AI summary failed", res.status, await res.text());
       return null;
@@ -95,6 +108,7 @@ async function aiSummary(params: {
     const text = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? "").join("").trim();
     return text || null;
   } catch (err) {
+    // Includes AbortError from the timeout above — always fail soft here.
     console.error("AI summary error", err);
     return null;
   }
@@ -245,6 +259,9 @@ export async function ingestAndDetect(
   // Endpoint risk reflects its worst live incident.
   await db.from("endpoints").update({ risk_level: severity }).eq("id", endpointId);
 
+  // Even though aiSummary() already fails soft internally, this extra guard
+  // guarantees the incident/detection/MITRE data we already saved above is
+  // never lost just because the AI step misbehaves in some unforeseen way.
   const summary = await aiSummary({
     title,
     severity,
@@ -252,6 +269,9 @@ export async function ingestAndDetect(
     hostname,
     reasons,
     events: correlated,
+  }).catch((err) => {
+    console.error("aiSummary call site error (ignored)", err);
+    return null;
   });
   if (summary) {
     await db.from("incidents").update({ summary }).eq("id", incidentId);
